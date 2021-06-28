@@ -2,7 +2,10 @@ version: "3.5"
 
 services:
   app:
-    build: .
+    build:
+      context: .
+      dockerfile: Dockerfile.dev
+    command: "air"
     volumes:
       - ${PWD}:/app
     ports:
