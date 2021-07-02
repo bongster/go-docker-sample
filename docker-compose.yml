@@ -3,10 +3,17 @@ version: "3.5"
 services:
   app:
     build:
-      context: .
+      context: ./api
       dockerfile: Dockerfile.dev
     command: "air"
     volumes:
       - ${PWD}:/app
     ports:
       - 8080:8080
+  worker:
+    build:
+      context: ./worker
+      dockerfile: Dockerfile.dev
+    command: "air"
+    volumes:
+      - ${PWD}:/app

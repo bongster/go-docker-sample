@@ -1,7 +1,7 @@
 package controller
 
 import (
-	"droneia-go/src/api/model"
+	"droneia-go-api/src/model"
 	"fmt"
 	"net/http"
 

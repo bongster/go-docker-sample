@@ -1,7 +1,7 @@
 package main
 
 import (
-	"droneia-go/src/api/controller"
+	"droneia-go-api/src/controller"
 	"fmt"
 	"log"
 	"net/http"
