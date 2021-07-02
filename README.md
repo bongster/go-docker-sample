@@ -1,2 +1,2 @@
-# droneia-go
+# Practice golang in web develop
 
