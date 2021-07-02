@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+	"os"
 
 	_ "github.com/lib/pq"
 
@@ -13,7 +14,7 @@ import (
 )
 
 func main() {
-	_, err := controller.NewDB("postgres://bongster88:bongster88@db:5432/bongster88")
+	_, err := controller.NewDB(os.Getenv(("DB_URL")))
 	if err != nil {
 		log.Panic(err)
 	}
