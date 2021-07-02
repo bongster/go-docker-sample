@@ -6,6 +6,8 @@ services:
       context: .
       dockerfile: Dockerfile.dev
     command: "air"
+    env_file:
+      - .env.development
     volumes:
       - ${PWD}:/app
     ports:
