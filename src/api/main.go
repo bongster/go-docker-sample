@@ -26,7 +26,12 @@ func main() {
 
 	e.GET("/", hello)
 	e.GET("/TaskGroups", controller.GetTaskGroups)
-	e.Logger.Fatal(e.Start(":8080"))
+	e.POST("/Upload", controller.UploadFile)
+	if value, ok := os.LookupEnv("PORT"); ok {
+		e.Logger.Fatal(e.Start(fmt.Sprintf(":%s", value)))
+	} else {
+		e.Logger.Fatal(e.Start(":8080"))
+	}
 }
 
 func hello(c echo.Context) error {
