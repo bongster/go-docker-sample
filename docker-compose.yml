@@ -10,3 +10,17 @@ services:
       - ${PWD}:/app
     ports:
       - 8080:8080
+    depends_on:
+      - db
+  db:
+    image: library/postgres:11.1-alpine
+    restart: unless-stopped
+    volumes:
+      - bongster88-db:/var/lib/postgresql
+    environment:
+      - POSTGRES_USER=bongster88
+      - POSTGRES_PASSWORD=bongster88
+      - POSTGRES_DB=bongster88
+
+volumes: 
+  bongster88-db:

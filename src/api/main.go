@@ -13,7 +13,7 @@ import (
 )
 
 func main() {
-	_, err := controller.NewDB("postgres://droneina:droneina@192.168.1.9:15432/droneina")
+	_, err := controller.NewDB("postgres://bongster88:bongster88@db:5432/bongster88")
 	if err != nil {
 		log.Panic(err)
 	}
