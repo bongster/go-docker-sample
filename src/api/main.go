@@ -23,15 +23,18 @@ func main() {
 	e := echo.New()
 	e.Use(middleware.Logger())
 	e.Use(middleware.Recover())
-	e.Use(middleware.JWTWithConfig(middleware.JWTConfig{
-		SigningKey:  []byte("secret"),
-		TokenLookup: "query:token",
-	}))
 
 	e.GET("/", hello)
 	e.GET("/TaskGroups", controller.GetTaskGroups)
-	e.POST("/Upload", controller.UploadFile)
 	e.POST("/Login", controller.Login)
+	r := e.Group("/restricted")
+	config := middleware.JWTConfig{
+		Claims:     &controller.JwtCustomClaims{},
+		SigningKey: []byte("secret"),
+	}
+	r.Use(middleware.JWTWithConfig(config))
+	r.POST("/Upload", controller.UploadFile)
+
 	if value, ok := os.LookupEnv("PORT"); ok {
 		e.Logger.Fatal(e.Start(fmt.Sprintf(":%s", value)))
 	} else {
