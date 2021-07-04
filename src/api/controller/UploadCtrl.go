@@ -1,14 +1,36 @@
 package controller
 
 import (
+	"fmt"
 	"io"
 	"io/fs"
 	"net/http"
 	"os"
 	"path/filepath"
 
+	"github.com/360EntSecGroup-Skylar/excelize/v2"
 	"github.com/labstack/echo/v4"
 )
+
+// Read excel data
+func readExcelFile(src io.Reader) error {
+	f, err := excelize.OpenReader(src)
+	if err != nil {
+		return err
+	}
+	sheetName := f.GetSheetName(0)
+	rows, err := f.GetRows(sheetName)
+	if err != nil {
+		return err
+	}
+	for _, row := range rows[1:] {
+		for _, colCell := range row {
+			fmt.Print(colCell, "\t")
+		}
+		fmt.Println()
+	}
+	return nil
+}
 
 func UploadFile(c echo.Context) error {
 	file, err := c.FormFile("file")
@@ -16,6 +38,7 @@ func UploadFile(c echo.Context) error {
 		return err
 	}
 	src, err := file.Open()
+
 	if err != nil {
 		return err
 	}
@@ -26,6 +49,7 @@ func UploadFile(c echo.Context) error {
 			return err
 		}
 	}
+	readExcelFile(src)
 
 	dst, err := os.Create(filepath.Join("upload", filepath.Base(file.Filename)))
 	if err != nil {

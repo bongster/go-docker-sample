@@ -27,13 +27,13 @@ func main() {
 	e.GET("/", hello)
 	e.GET("/TaskGroups", controller.GetTaskGroups)
 	e.POST("/Login", controller.Login)
+	e.POST("/Upload", controller.UploadFile)
 	r := e.Group("/restricted")
 	config := middleware.JWTConfig{
 		Claims:     &controller.JwtCustomClaims{},
 		SigningKey: []byte("secret"),
 	}
 	r.Use(middleware.JWTWithConfig(config))
-	r.POST("/Upload", controller.UploadFile)
 
 	if value, ok := os.LookupEnv("PORT"); ok {
 		e.Logger.Fatal(e.Start(fmt.Sprintf(":%s", value)))
