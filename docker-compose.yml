@@ -37,4 +37,4 @@ services:
 
 volumes: 
   bongster88-db:
-    bonster88-mongo:
+  bonster88-mongo:
