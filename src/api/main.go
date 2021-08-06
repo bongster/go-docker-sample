@@ -26,7 +26,20 @@ func main() {
 
 	e.GET("/", hello)
 	e.GET("/TaskGroups", controller.GetTaskGroups)
-	e.Logger.Fatal(e.Start(":8080"))
+	e.POST("/Login", controller.Login)
+	e.POST("/Upload", controller.UploadFile)
+	r := e.Group("/restricted")
+	config := middleware.JWTConfig{
+		Claims:     &controller.JwtCustomClaims{},
+		SigningKey: []byte("secret"),
+	}
+	r.Use(middleware.JWTWithConfig(config))
+
+	if value, ok := os.LookupEnv("PORT"); ok {
+		e.Logger.Fatal(e.Start(fmt.Sprintf(":%s", value)))
+	} else {
+		e.Logger.Fatal(e.Start(":8080"))
+	}
 }
 
 func hello(c echo.Context) error {

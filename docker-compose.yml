@@ -14,6 +14,7 @@ services:
       - 8080:8080
     depends_on:
       - db
+      - rabbitmq
       - mongo
   db:
     image: library/postgres:11.1-alpine
@@ -24,6 +25,17 @@ services:
       - POSTGRES_USER=bongster88
       - POSTGRES_PASSWORD=bongster88
       - POSTGRES_DB=bongster88
+
+  rabbitmq:
+    image: rabbitmq:3-management-alpine
+    restart: unless-stopped
+    volumes:
+      - bongster88-mq:/data
+    environment:
+      - RABBITMQ_DEFAULT_USER=admin
+      - RABBITMQ_DEFAULT_PASS=admin
+      - RABBITMQ_NODENAME=node@rabbitmq
+  
   mongo:
     image: mongo
     ports:
@@ -37,4 +49,8 @@ services:
 
 volumes: 
   bongster88-db:
+    driver: local
   bonster88-mongo:
+    driver: local
+  bongster88-mq:
+    driver: local
