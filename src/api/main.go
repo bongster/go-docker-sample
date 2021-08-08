@@ -25,15 +25,20 @@ func main() {
 	e.Use(middleware.Recover())
 
 	e.GET("/", hello)
-	e.GET("/TaskGroups", controller.GetTaskGroups)
 	e.POST("/Login", controller.Login)
 	e.POST("/Upload", controller.UploadFile)
+	// Chatting Router
+
 	r := e.Group("/restricted")
 	config := middleware.JWTConfig{
 		Claims:     &controller.JwtCustomClaims{},
 		SigningKey: []byte("secret"),
 	}
 	r.Use(middleware.JWTWithConfig(config))
+	r.GET("/chats", controller.GetChats)
+	r.POST("/chats", controller.CreateChat)
+	r.PUT("/chats/:id", controller.UpdateChat)
+	r.DELETE("/chats/:id", controller.DeleteChat)
 
 	if value, ok := os.LookupEnv("PORT"); ok {
 		e.Logger.Fatal(e.Start(fmt.Sprintf(":%s", value)))
