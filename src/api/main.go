@@ -7,11 +7,23 @@ import (
 	"net/http"
 	"os"
 
-	_ "github.com/lib/pq"
-
+	"github.com/go-playground/validator"
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
+	_ "github.com/lib/pq"
 )
+
+type CustomValidator struct {
+	validator *validator.Validate
+}
+
+func (cv *CustomValidator) Validate(i interface{}) error {
+	if err := cv.validator.Struct(i); err != nil {
+		// Optionally, you could return the error to give each route more control over the status code
+		return echo.NewHTTPError(http.StatusBadRequest, err.Error())
+	}
+	return nil
+}
 
 func main() {
 	_, err := controller.NewDB(os.Getenv(("DB_URL")))
@@ -21,12 +33,18 @@ func main() {
 	fmt.Println("DB Connected")
 
 	e := echo.New()
+	e.Validator = &CustomValidator{validator: validator.New()}
+
 	e.Use(middleware.Logger())
 	e.Use(middleware.Recover())
 
 	e.GET("/", hello)
 	e.POST("/Login", controller.Login)
 	e.POST("/Upload", controller.UploadFile)
+	e.GET("/chats", controller.GetChats)
+	e.POST("/chats", controller.CreateChat)
+	e.PUT("/chats/:id", controller.UpdateChat)
+	e.DELETE("/chats/:id", controller.DeleteChat)
 	// Chatting Router
 
 	r := e.Group("/restricted")
