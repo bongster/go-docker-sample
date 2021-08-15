@@ -7,4 +7,17 @@ content-type: application/json
 POST http://localhost:8080/chats HTTP/1.1
 content-type: application/json
 
+{
+    "name": "sample chatting",
+    "status": "ING"
+}
 
+GET http://localhost:8080/chats/61190fb65d2d405ec838e9ef/messages HTTP/1.1
+content-type: application/json
+
+POST http://localhost:8080/chats/61190fb65d2d405ec838e9ef/messages HTTP/1.1
+content-type: application/json
+
+{
+    "content": "Test message"
+}
