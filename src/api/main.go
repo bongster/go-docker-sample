@@ -45,6 +45,8 @@ func main() {
 	e.POST("/chats", controller.CreateChat)
 	e.PUT("/chats/:id", controller.UpdateChat)
 	e.DELETE("/chats/:id", controller.DeleteChat)
+	e.GET("/chats/:id/messages", controller.GetChatMessages)
+	e.POST("/chats/:id/messages", controller.CreateChatMessages)
 	// Chatting Router
 
 	r := e.Group("/restricted")
