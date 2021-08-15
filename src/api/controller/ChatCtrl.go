@@ -120,19 +120,19 @@ func CreateChatMessages(c echo.Context) error {
 		return c.JSON(http.StatusInternalServerError, err)
 	}
 
-	model := new(model.Message)
-	model.Chat, err = primitive.ObjectIDFromHex(id)
+	m := new(model.Message)
+	m.Chat, _ = primitive.ObjectIDFromHex(id)
 	if err != nil {
 		return err
 	}
-	if err = c.Bind(model); err != nil {
+	if err = c.Bind(m); err != nil {
 		return echo.NewHTTPError(http.StatusBadRequest, err.Error())
 	}
-	if err = c.Validate(model); err != nil {
+	if err = c.Validate(m); err != nil {
 		return err
 	}
 	collection := client.Database("app").Collection("messages")
-	insertResult, err := collection.InsertOne(context.TODO(), model)
+	insertResult, err := collection.InsertOne(context.TODO(), m)
 	if err != nil {
 		log.Fatal(err)
 		return err
