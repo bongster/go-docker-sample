@@ -10,6 +10,11 @@ import (
 	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
+type IChatService interface {
+	FindAll(options *options.FindOptions) ([]*model.Chat, error)
+	InsertOne(data *model.Chat) (*model.Chat, error)
+}
+
 type ChatService struct {
 	DB *mongo.Client
 }

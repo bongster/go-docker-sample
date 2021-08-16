@@ -8,7 +8,7 @@ import (
 
 type Handler struct {
 	DB          *mongo.Client
-	ChatService service.Service
+	ChatService service.IChatService
 }
 
 func (h *Handler) InitService() {
