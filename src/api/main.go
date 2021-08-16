@@ -2,7 +2,7 @@ package main
 
 import (
 	"droneia-go/src/api/db"
-	"droneia-go/src/api/handler"
+	"droneia-go/src/api/route"
 	"fmt"
 	"log"
 	"net/http"
@@ -38,41 +38,13 @@ func main() {
 
 	e.Use(middleware.Logger())
 	e.Use(middleware.Recover())
-
 	db, _ := db.NewMongoDB(os.Getenv("MONGO_DB_URL"))
-	h := &handler.Handler{
-		DB: db,
-	}
 
-	e.GET("/", Index)
-	e.POST("/Login", h.Login)
-	e.POST("/Upload", h.UploadFile)
-	e.GET("/chats", h.GetChats)
-	e.POST("/chats", h.CreateChat)
-	e.GET("/chats/:id/messages", h.GetChatMessages)
-	e.POST("/chats/:id/messages", h.CreateChatMessages)
-	e.PUT("/chats/:id", h.UpdateChat)
-	e.DELETE("/chats/:id", h.DeleteChat)
-	// Chatting Router
-
-	r := e.Group("/restricted")
-	config := middleware.JWTConfig{
-		Claims:     &handler.JwtCustomClaims{},
-		SigningKey: []byte("secret"),
-	}
-	r.Use(middleware.JWTWithConfig(config))
-	r.GET("/chats", h.GetChats)
-	r.POST("/chats", h.CreateChat)
-	r.PUT("/chats/:id", h.UpdateChat)
-	r.DELETE("/chats/:id", h.DeleteChat)
+	e = route.Init(e, db)
 
 	if value, ok := os.LookupEnv("PORT"); ok {
 		e.Logger.Fatal(e.Start(fmt.Sprintf(":%s", value)))
 	} else {
 		e.Logger.Fatal(e.Start(":8080"))
 	}
-}
-
-func Index(c echo.Context) error {
-	return c.String(http.StatusOK, "Hello world")
 }
