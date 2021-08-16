@@ -33,3 +33,20 @@ func (c *ChatService) FindAll(options *options.FindOptions) ([]*model.Chat, erro
 	defer cur.Close(context.TODO())
 	return results, nil
 }
+
+func (c *ChatService) InsertOne(data *model.Chat) (*model.Chat, error) {
+	collection := c.DB.Database("app").Collection("chats")
+	insertResult, err := collection.InsertOne(context.TODO(), data)
+	if err != nil {
+		log.Fatal(err)
+		return nil, err
+	}
+
+	var chat *model.Chat
+	err = collection.FindOne(context.TODO(), bson.M{"_id": insertResult.InsertedID}).Decode(&chat)
+	if err != nil {
+		log.Fatal(err)
+		return nil, err
+	}
+	return chat, nil
+}

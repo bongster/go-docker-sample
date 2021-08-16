@@ -39,8 +39,7 @@ func (h *Handler) CreateChat(c echo.Context) error {
 	if err := c.Validate(model); err != nil {
 		return err
 	}
-	collection := h.DB.Database("app").Collection("chats")
-	insertResult, err := collection.InsertOne(context.TODO(), model)
+	insertResult, err := h.ChatService.InsertOne(model)
 	if err != nil {
 		log.Fatal(err)
 		return err

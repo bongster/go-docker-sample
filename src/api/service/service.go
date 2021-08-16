@@ -8,4 +8,5 @@ import (
 
 type Service interface {
 	FindAll(options *options.FindOptions) ([]*model.Chat, error)
+	InsertOne(data *model.Chat) (*model.Chat, error)
 }
