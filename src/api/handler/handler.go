@@ -8,11 +8,14 @@ import (
 
 type Handler struct {
 	DB          *mongo.Client
-	ChatService service.ChatService
+	ChatService *service.ChatService
 }
 
 func (h *Handler) InitService() {
-	h.ChatService = service.ChatService{
-		DB: h.DB,
+	if h.ChatService == nil {
+		h.ChatService = &service.ChatService{
+			DB: h.DB,
+		}
 	}
+
 }
