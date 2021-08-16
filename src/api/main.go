@@ -4,7 +4,6 @@ import (
 	"droneia-go/src/api/db"
 	"droneia-go/src/api/route"
 	"fmt"
-	"log"
 	"net/http"
 	"os"
 
@@ -27,12 +26,6 @@ func (cv *CustomValidator) Validate(i interface{}) error {
 }
 
 func main() {
-	_, err := db.NewDB(os.Getenv(("DB_URL")))
-	if err != nil {
-		log.Panic(err)
-	}
-	fmt.Println("DB Connected")
-
 	e := echo.New()
 	e.Validator = &CustomValidator{validator: validator.New()}
 

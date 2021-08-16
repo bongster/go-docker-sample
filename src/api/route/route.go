@@ -17,6 +17,7 @@ func Init(e *echo.Echo, db *mongo.Client) *echo.Echo {
 	h := &handler.Handler{
 		DB: db,
 	}
+	h.InitService()
 	// Default
 	e.GET("/", Index)
 	e.POST("/Login", h.Login)

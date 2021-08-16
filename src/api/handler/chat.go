@@ -14,34 +14,14 @@ import (
 	model "droneia-go/src/api/model"
 )
 
-type Handler struct {
-	DB *mongo.Client
-}
-
 func (h *Handler) GetChats(c echo.Context) error {
-	collection := h.DB.Database("app").Collection("chats")
 	findOptions := options.Find()
 	findOptions.SetLimit(10)
-	var results []*model.Chat
-	cur, err := collection.Find(context.TODO(), bson.D{{}}, findOptions)
+	results, err := h.ChatService.FindAll(findOptions)
 	if err != nil {
 		log.Fatal(err)
 		return err
 	}
-	for cur.Next(context.TODO()) {
-		var elem model.Chat
-		err := cur.Decode(&elem)
-		if err != nil {
-			return err
-		}
-		results = append(results, &elem)
-	}
-	if err := cur.Err(); err != nil {
-		log.Fatal(err)
-		return err
-	}
-	defer cur.Close(context.TODO())
-
 	return c.JSON(http.StatusOK, results)
 }
 
