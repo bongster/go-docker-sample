@@ -23,3 +23,11 @@
 - [x] Postgresql
 - [x] Mongodb
 - [ ] Dynamodb
+
+
+#### TEST
+
+```sh
+export  CGO_ENABLED=0
+go test -v ./...
+```

@@ -11,7 +11,7 @@ import (
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
 
-	model "droneia-go/src/api/model"
+	"droneia-go/src/api/model"
 )
 
 func (h *Handler) GetChats(c echo.Context) error {

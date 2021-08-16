@@ -14,13 +14,8 @@ type ChatService struct {
 	DB *mongo.Client
 }
 
-func (c *ChatService) getCollection() *mongo.Collection {
-	collection := c.DB.Database("app").Collection("chats")
-	return collection
-}
-
 func (c *ChatService) FindAll(options *options.FindOptions) ([]*model.Chat, error) {
-	collection := c.getCollection()
+	collection := c.DB.Database("app").Collection("chats")
 	var results []*model.Chat
 	cur, err := collection.Find(context.TODO(), bson.D{{}}, options)
 	if err != nil {
