@@ -1,4 +1,4 @@
-package controller
+package handler
 
 import (
 	"fmt"
@@ -32,7 +32,7 @@ func readExcelFile(src io.Reader) error {
 	return nil
 }
 
-func UploadFile(c echo.Context) error {
+func (h *Handler) UploadFile(c echo.Context) error {
 	file, err := c.FormFile("file")
 	if err != nil {
 		return err

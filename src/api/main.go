@@ -1,7 +1,8 @@
 package main
 
 import (
-	"droneia-go/src/api/controller"
+	"droneia-go/src/api/db"
+	"droneia-go/src/api/handler"
 	"fmt"
 	"log"
 	"net/http"
@@ -26,7 +27,7 @@ func (cv *CustomValidator) Validate(i interface{}) error {
 }
 
 func main() {
-	_, err := controller.NewDB(os.Getenv(("DB_URL")))
+	_, err := db.NewDB(os.Getenv(("DB_URL")))
 	if err != nil {
 		log.Panic(err)
 	}
@@ -38,27 +39,32 @@ func main() {
 	e.Use(middleware.Logger())
 	e.Use(middleware.Recover())
 
-	e.GET("/", hello)
-	e.POST("/Login", controller.Login)
-	e.POST("/Upload", controller.UploadFile)
-	e.GET("/chats", controller.GetChats)
-	e.POST("/chats", controller.CreateChat)
-	e.PUT("/chats/:id", controller.UpdateChat)
-	e.DELETE("/chats/:id", controller.DeleteChat)
-	e.GET("/chats/:id/messages", controller.GetChatMessages)
-	e.POST("/chats/:id/messages", controller.CreateChatMessages)
+	db, _ := db.NewMongoDB(os.Getenv("MONGO_DB_URL"))
+	h := &handler.Handler{
+		DB: db,
+	}
+
+	e.GET("/", Index)
+	e.POST("/Login", h.Login)
+	e.POST("/Upload", h.UploadFile)
+	e.GET("/chats", h.GetChats)
+	e.POST("/chats", h.CreateChat)
+	e.GET("/chats/:id/messages", h.GetChatMessages)
+	e.POST("/chats/:id/messages", h.CreateChatMessages)
+	e.PUT("/chats/:id", h.UpdateChat)
+	e.DELETE("/chats/:id", h.DeleteChat)
 	// Chatting Router
 
 	r := e.Group("/restricted")
 	config := middleware.JWTConfig{
-		Claims:     &controller.JwtCustomClaims{},
+		Claims:     &handler.JwtCustomClaims{},
 		SigningKey: []byte("secret"),
 	}
 	r.Use(middleware.JWTWithConfig(config))
-	r.GET("/chats", controller.GetChats)
-	r.POST("/chats", controller.CreateChat)
-	r.PUT("/chats/:id", controller.UpdateChat)
-	r.DELETE("/chats/:id", controller.DeleteChat)
+	r.GET("/chats", h.GetChats)
+	r.POST("/chats", h.CreateChat)
+	r.PUT("/chats/:id", h.UpdateChat)
+	r.DELETE("/chats/:id", h.DeleteChat)
 
 	if value, ok := os.LookupEnv("PORT"); ok {
 		e.Logger.Fatal(e.Start(fmt.Sprintf(":%s", value)))
@@ -67,6 +73,6 @@ func main() {
 	}
 }
 
-func hello(c echo.Context) error {
+func Index(c echo.Context) error {
 	return c.String(http.StatusOK, "Hello world")
 }

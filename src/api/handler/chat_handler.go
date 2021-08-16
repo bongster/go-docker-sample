@@ -1,8 +1,7 @@
-package controller
+package handler
 
 import (
 	"context"
-	"fmt"
 	"log"
 	"net/http"
 
@@ -15,12 +14,12 @@ import (
 	model "droneia-go/src/api/model"
 )
 
-func GetChats(c echo.Context) error {
-	client, err := NewMongoDB("mongodb://admin:admin@mongo:27017")
-	if err != nil {
-		return c.JSON(http.StatusInternalServerError, err)
-	}
-	collection := client.Database("app").Collection("chats")
+type Handler struct {
+	DB *mongo.Client
+}
+
+func (h *Handler) GetChats(c echo.Context) error {
+	collection := h.DB.Database("app").Collection("chats")
 	findOptions := options.Find()
 	findOptions.SetLimit(10)
 	var results []*model.Chat
@@ -46,26 +45,20 @@ func GetChats(c echo.Context) error {
 	return c.JSON(http.StatusOK, results)
 }
 
-func GetChat(c echo.Context) error {
+func (h *Handler) GetChat(c echo.Context) error {
 	dummy := new(interface{})
 	return c.JSON(http.StatusOK, dummy)
 }
 
-func CreateChat(c echo.Context) error {
-	client, err := NewMongoDB("mongodb://admin:admin@mongo:27017")
-	if err != nil {
-		return c.JSON(http.StatusInternalServerError, err)
-	}
-
+func (h *Handler) CreateChat(c echo.Context) error {
 	model := new(model.Chat)
-	if err = c.Bind(model); err != nil {
+	if err := c.Bind(model); err != nil {
 		return echo.NewHTTPError(http.StatusBadRequest, err.Error())
 	}
-	if err = c.Validate(model); err != nil {
+	if err := c.Validate(model); err != nil {
 		return err
 	}
-	fmt.Printf("%v", model)
-	collection := client.Database("app").Collection("chats")
+	collection := h.DB.Database("app").Collection("chats")
 	insertResult, err := collection.InsertOne(context.TODO(), model)
 	if err != nil {
 		log.Fatal(err)
@@ -74,26 +67,22 @@ func CreateChat(c echo.Context) error {
 	return c.JSON(http.StatusCreated, insertResult)
 }
 
-func UpdateChat(c echo.Context) error {
+func (h *Handler) UpdateChat(c echo.Context) error {
 	dummy := new(interface{})
 	return c.JSON(http.StatusNotImplemented, dummy)
 }
 
-func DeleteChat(c echo.Context) error {
+func (h *Handler) DeleteChat(c echo.Context) error {
 	dummy := new(interface{})
 	return c.JSON(http.StatusNotImplemented, dummy)
 }
 
-func GetChatMessages(c echo.Context) error {
+func (h *Handler) GetChatMessages(c echo.Context) error {
 	id, err := primitive.ObjectIDFromHex(c.Param("id"))
 	if err != nil {
 		return err
 	}
-	client, err := NewMongoDB("mongodb://admin:admin@mongo:27017")
-	if err != nil {
-		return c.JSON(http.StatusInternalServerError, err)
-	}
-	collection := client.Database("app").Collection("messages")
+	collection := h.DB.Database("app").Collection("messages")
 	var results []*model.Message
 	filterStage := bson.D{primitive.E{Key: "$limit", Value: 10}}
 	matchStage := bson.D{primitive.E{Key: "$match", Value: bson.D{primitive.E{Key: "chat", Value: id}}}}
@@ -113,25 +102,19 @@ func GetChatMessages(c echo.Context) error {
 	return c.JSON(http.StatusOK, results)
 }
 
-func CreateChatMessages(c echo.Context) error {
+func (h *Handler) CreateChatMessages(c echo.Context) error {
 	id := c.Param("id")
-	client, err := NewMongoDB("mongodb://admin:admin@mongo:27017")
-	if err != nil {
-		return c.JSON(http.StatusInternalServerError, err)
-	}
 
 	m := new(model.Message)
 	m.Chat, _ = primitive.ObjectIDFromHex(id)
-	if err != nil {
-		return err
-	}
-	if err = c.Bind(m); err != nil {
+
+	if err := c.Bind(m); err != nil {
 		return echo.NewHTTPError(http.StatusBadRequest, err.Error())
 	}
-	if err = c.Validate(m); err != nil {
+	if err := c.Validate(m); err != nil {
 		return err
 	}
-	collection := client.Database("app").Collection("messages")
+	collection := h.DB.Database("app").Collection("messages")
 	insertResult, err := collection.InsertOne(context.TODO(), m)
 	if err != nil {
 		log.Fatal(err)

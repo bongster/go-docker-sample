@@ -1,15 +1,27 @@
-package controller
+package db
 
 import (
 	"context"
 	"database/sql"
+	"errors"
 	"fmt"
+	"strings"
 	"time"
 
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
 	"go.mongodb.org/mongo-driver/mongo/readpref"
 )
+
+func Init(dataSourceName string) (interface{}, error) {
+	if strings.HasPrefix(dataSourceName, "postgres") {
+		return NewDB(dataSourceName)
+	}
+	if strings.HasPrefix(dataSourceName, "mongo") {
+		return NewMongoDB(dataSourceName)
+	}
+	return nil, errors.New("not supported db driver")
+}
 
 func NewDB(dataSourceName string) (*sql.DB, error) {
 	db, err := sql.Open("postgres", fmt.Sprintf("%s?sslmode=disable", dataSourceName))
