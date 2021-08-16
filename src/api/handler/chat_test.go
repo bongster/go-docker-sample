@@ -23,6 +23,7 @@ func TestGetChat(t *testing.T) {
 	c.SetPath("/chats")
 
 	db, _ := db.NewMongoDB(os.Getenv("MONGO_DB_URL"))
+	// TODO: change set DB from variables to argument for testing
 	h := &Handler{
 		DB: db,
 	}

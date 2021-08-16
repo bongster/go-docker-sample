@@ -45,6 +45,7 @@ func (h *Handler) GetChats(c echo.Context) error {
 	return c.JSON(http.StatusOK, results)
 }
 
+// change use Handler instead of class method for testing
 func (h *Handler) GetChat(c echo.Context) error {
 	dummy := new(interface{})
 	return c.JSON(http.StatusOK, dummy)
