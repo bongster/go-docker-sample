@@ -1,4 +1,4 @@
-package controller
+package handler
 
 import (
 	"fmt"
@@ -21,7 +21,7 @@ type JwtCustomClaims struct {
 	jwt.StandardClaims
 }
 
-func Login(c echo.Context) error {
+func (h *Handler) Login(c echo.Context) error {
 	u := new(User)
 	if err := c.Bind(u); err != nil {
 		return err

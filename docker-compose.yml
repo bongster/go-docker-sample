@@ -21,14 +21,18 @@ services:
     restart: unless-stopped
     volumes:
       - bongster88-db:/var/lib/postgresql
+    ports:
+      - 15432:5432
     environment:
       - POSTGRES_USER=bongster88
       - POSTGRES_PASSWORD=bongster88
       - POSTGRES_DB=bongster88
 
   rabbitmq:
-    image: rabbitmq:3-management-alpine
+    image: rabbitmq:3.8-management-alpine
     restart: unless-stopped
+    ports:
+      - 15672:15672
     volumes:
       - bongster88-mq:/data
     environment:
