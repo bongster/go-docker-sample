@@ -29,15 +29,14 @@ services:
       - POSTGRES_DB=bongster88
 
   rabbitmq:
-    image: rabbitmq:3.8-management-alpine
+    image: rabbitmq:3.9-management-alpine
     restart: unless-stopped
     ports:
       - 15672:15672
     volumes:
+      - ./conf/rabbitmq.conf:/etc/rabbitmq/rabbitmq.conf
       - bongster88-mq:/data
     environment:
-      - RABBITMQ_DEFAULT_USER=admin
-      - RABBITMQ_DEFAULT_PASS=admin
       - RABBITMQ_NODENAME=node@rabbitmq
   
   mongo:
