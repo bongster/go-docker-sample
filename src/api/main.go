@@ -10,7 +10,11 @@ import (
 	"github.com/go-playground/validator"
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
+    "database/sql"
 	_ "github.com/lib/pq"
+    "github.com/golang-migrate/migrate/v4"
+    "github.com/golang-migrate/migrate/v4/database/postgres"
+    _ "github.com/golang-migrate/migrate/v4/source/file"
 )
 
 type CustomValidator struct {
@@ -25,7 +29,29 @@ func (cv *CustomValidator) Validate(i interface{}) error {
 	return nil
 }
 
+func runMigrate() {
+    db, err := sql.Open("postgres", os.Getenv("POSTGRESQL_URL"))
+    if err != nil {
+        panic(err)
+    }
+    driver, err := postgres.WithInstance(db, &postgres.Config{})
+    if err != nil {
+        panic(err)
+    }
+    m, err := migrate.NewWithDatabaseInstance(
+        "file:///app/src/db/migrations",
+        "postgres", driver)
+    if err != nil {
+        panic(err)
+    }
+
+    if err := m.Up(); err != nil {
+        m.Down()
+    }
+}
+
 func main() {
+    //runMigrate()
 	e := echo.New()
 	e.Validator = &CustomValidator{validator: validator.New()}
 
